@@ -21,9 +21,13 @@ namespace Hont.PostProcessing
             var enableButtonClicked = false;
             HontPostProcessingGUIHelper.Header(mTarget.Name, mTarget.Enabled, out headerIsClicked, out enableButtonClicked);
             if (headerIsClicked) mTarget.Unfold = !mTarget.Unfold;
-            if (enableButtonClicked) mTarget.Enabled = !mTarget.Enabled;
+            if (enableButtonClicked)
+            {
+                mTarget.Enabled = !mTarget.Enabled;
+                GUI.changed = true;
+            }
 
-            if(mTarget.Unfold)
+            if (mTarget.Unfold)
             {
                 EditorGUI.indentLevel++;
 

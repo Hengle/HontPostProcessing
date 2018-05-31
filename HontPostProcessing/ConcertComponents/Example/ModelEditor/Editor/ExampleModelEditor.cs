@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace Hont.PostProcessing
+namespace Hont.PostProcessing.ConcertComponents
 {
-    [HontPostProcessingModelInspector(typeof(Test1Model))]
-    //[HontPostProcessingIgnore]/*Debug*/
-    public class Test1ModelEditor : HontPostProcessingModelEditor<Test1Model>
+    [HontPostProcessingModelInspector(typeof(ExampleModel))]
+    [HontPostProcessingIgnore]/*Debug*/
+    public class ExampleModelEditor : HontPostProcessingModelEditor<ExampleModel>
     {
         protected override void OnInspectorGUI()
         {

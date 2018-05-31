@@ -6,24 +6,39 @@ namespace Hont.PostProcessing
 {
     public class HontPostProcessingBehaviour : MonoBehaviour
     {
-        public HontPostProcessingProfile profile;
+        [SerializeField]
+        HontPostProcessingProfile mProfile;
 
+        public HontPostProcessingProfile Profile { get { return mProfile; } }
+
+
+        public void ReplaceProfile(HontPostProcessingProfile profile)
+        {
+            mProfile = profile;
+            mProfile.Init(Camera.main);
+            mProfile.Enable();
+        }
 
         void OnEnable()
         {
-            profile.Init(Camera.main);
+            mProfile.Init(Camera.main);
 
-            profile.Enable();
+            mProfile.Enable();
         }
 
         void OnDisable()
         {
-            profile.Disable();
+            mProfile.Disable();
+        }
+
+        private void OnPreRender()
+        {
+            mProfile.PreRender();
         }
 
         void OnRenderImage(RenderTexture source, RenderTexture destination)
         {
-            profile.Render(source, destination);
+            mProfile.Render(source, destination);
         }
     }
 }

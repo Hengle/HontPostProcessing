@@ -21,6 +21,7 @@ namespace Hont.PostProcessing
 
         public HontPostProcessingModelBase GetModel() { return mModel; }
 
+        public virtual void OnPreRender() { }
         public abstract void OnRender();
 
         public virtual void OnEnable() { }

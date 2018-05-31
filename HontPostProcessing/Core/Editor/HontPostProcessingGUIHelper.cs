@@ -24,15 +24,22 @@ namespace Hont.PostProcessing
 
             if (e.type == EventType.MouseDown)
             {
+                var flag = false;
+
                 if (toggleRect.Contains(e.mousePosition))
                 {
                     enabledButtonClicked = !enabledButtonClicked;
+                    flag = true;
                 }
 
                 else if (rect.Contains(e.mousePosition))
                 {
                     headerIsClicked = !headerIsClicked;
+                    flag = true;
                 }
+
+                if (flag)
+                    e.Use();
             }
         }
     }

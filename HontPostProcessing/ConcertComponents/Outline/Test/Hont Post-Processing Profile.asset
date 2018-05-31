@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4150cf0d6d13f546bc44799eb2d963a, type: 3}
+  m_Name: Hont Post-Processing Profile
+  m_EditorClassIdentifier: 
+  modelSerializeData: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<ArrayOfHontPostProcessingModelBase
+    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n
+    \ <HontPostProcessingModelBase xsi:type=\"ExampleModel\">\r\n    <Enabled>false</Enabled>\r\n
+    \   <Unfold>false</Unfold>\r\n    <a>0</a>\r\n  </HontPostProcessingModelBase>\r\n
+    \ <HontPostProcessingModelBase xsi:type=\"OutlineModel\">\r\n    <Enabled>true</Enabled>\r\n
+    \   <Unfold>true</Unfold>\r\n    <outlineColor>\r\n      <r>1</r>\r\n      <g>0</g>\r\n
+    \     <b>0</b>\r\n      <a>0.5</a>\r\n    </outlineColor>\r\n    <outlineWidth>12</outlineWidth>\r\n
+    \ </HontPostProcessingModelBase>\r\n</ArrayOfHontPostProcessingModelBase>"

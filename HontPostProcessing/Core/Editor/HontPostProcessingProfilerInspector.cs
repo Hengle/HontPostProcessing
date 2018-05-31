@@ -23,30 +23,37 @@ namespace Hont.PostProcessing
                 Init();
             }
 
+            EditorGUI.BeginChangeCheck();
             for (int i = 0, iMax = mModelEditorList.Count; i < iMax; i++)
             {
                 var modelEditor = mModelEditorList[i];
 
                 modelEditor.OnGUI();
             }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedProperties();
+                EditorUtility.SetDirty(target);
+            }
         }
 
         void Init()
         {
             //Debug.
-            if (ConcertTarget.modelList.Count == 0)
-                ConcertTarget.modelList = HontPostProcessingUtility.InstancesFromBaseClass<HontPostProcessingModelBase>();
+            if (ConcertTarget.ModelList.Count == 0)
+                ConcertTarget.ModelList.AddRange(HontPostProcessingUtility.InstancesFromBaseClass<HontPostProcessingModelBase>());
 
             mModelEditorList = new List<HontPostProcessingModelEditorBase>();
             var allModelEditorList = HontPostProcessingUtility.InstancesFromBaseClass<HontPostProcessingModelEditorBase>();
 
-            for (int i = 0, iMax = ConcertTarget.modelList.Count; i < iMax; i++)
+            for (int i = 0, iMax = ConcertTarget.ModelList.Count; i < iMax; i++)
             {
-                var model = ConcertTarget.modelList[i];
+                var model = ConcertTarget.ModelList[i];
 
                 var targetModelEditor = allModelEditorList.Find(m => IsAttributeMatchedModel(model, m.GetType().GetCustomAttributes(false)));
 
-                if(targetModelEditor!=null)
+                if (targetModelEditor != null)
                 {
                     targetModelEditor.Init(model);
                     mModelEditorList.Add(targetModelEditor);

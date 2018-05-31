@@ -11,13 +11,15 @@ namespace Hont.PostProcessing
     [CreateAssetMenu(fileName = "Hont Post-Processing Profile", menuName = "Hont Post Processing Profile", order = 204)]
     public class HontPostProcessingProfile : ScriptableObject, ISerializationCallbackReceiver
     {
-        public List<HontPostProcessingModelBase> modelList = new List<HontPostProcessingModelBase>();
+        List<HontPostProcessingModelBase> mModelList = new List<HontPostProcessingModelBase>();
 
         [SerializeField]
         string modelSerializeData;
 
         List<HontPostProcessingComponentBase> mComponentList;
         HontPostProcessingContext mContext;
+
+        public List<HontPostProcessingModelBase> ModelList { get { return mModelList; } }
 
 
         public void Init(Camera camera)
@@ -29,7 +31,7 @@ namespace Hont.PostProcessing
             for (int i = 0, iMax = mComponentList.Count; i < iMax; i++)
             {
                 var item = mComponentList[i];
-                var matchModel = modelList.Find(m => m.Name == item.Name);
+                var matchModel = mModelList.Find(m => m.Name == item.Name);
                 item.Init(mContext, matchModel);
             }
         }
@@ -39,7 +41,9 @@ namespace Hont.PostProcessing
             for (int i = 0, iMax = mComponentList.Count; i < iMax; i++)
             {
                 var item = mComponentList[i];
-                item.OnEnable();
+
+                if (item.GetModel().Enabled)
+                    item.OnEnable();
             }
         }
 
@@ -48,7 +52,20 @@ namespace Hont.PostProcessing
             for (int i = 0, iMax = mComponentList.Count; i < iMax; i++)
             {
                 var item = mComponentList[i];
-                item.OnDisable();
+
+                if (item.GetModel().Enabled)
+                    item.OnDisable();
+            }
+        }
+
+        public void PreRender()
+        {
+            for (int i = 0, iMax = mComponentList.Count; i < iMax; i++)
+            {
+                var item = mComponentList[i];
+
+                if (item.GetModel().Enabled)
+                    item.OnPreRender();
             }
         }
 
@@ -60,7 +77,8 @@ namespace Hont.PostProcessing
             {
                 var item = mComponentList[i];
 
-                item.OnRender();
+                if (item.GetModel().Enabled)
+                    item.OnRender();
             }
 
             Graphics.Blit(mContext.CurrentRenderRT, dst);
@@ -71,13 +89,19 @@ namespace Hont.PostProcessing
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             var extraTypes = HontPostProcessingUtility.GetChildrenClasses<HontPostProcessingModelBase>();
-            modelSerializeData = XmlSerializationHelper.SerializationToString(modelList, extraTypes);
+            modelSerializeData = XmlSerializationHelper.SerializationToString(mModelList, extraTypes);
         }
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            var extraTypes = HontPostProcessingUtility.GetChildrenClasses<HontPostProcessingModelBase>();
-            modelList = XmlSerializationHelper.DeSerializationFromString<List<HontPostProcessingModelBase>>(modelSerializeData, extraTypes);
+            try
+            {
+                var extraTypes = HontPostProcessingUtility.GetChildrenClasses<HontPostProcessingModelBase>();
+                mModelList = XmlSerializationHelper.DeSerializationFromString<List<HontPostProcessingModelBase>>(modelSerializeData, extraTypes);
+            }
+            catch
+            {
+            }
         }
         #endregion
     }
