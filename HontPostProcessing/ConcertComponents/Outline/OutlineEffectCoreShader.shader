@@ -26,7 +26,7 @@
 	float4 _OutlineColor;
 	sampler2D _OutlineMaskTexture;
 
-	#define BLOOM 2
+	#define OFFSET 2
 
 	v2f vert(appdata_img v)
 	{
@@ -35,16 +35,16 @@
 
 		o.uv = v.texcoord;
 		o.uv20.xy = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy, _MainTex_ST);
-		o.uv20.zw = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(-BLOOM, -BLOOM), _MainTex_ST);
+		o.uv20.zw = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(-OFFSET, -OFFSET), _MainTex_ST);
 
-		o.uv21.xy = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(BLOOM, -BLOOM), _MainTex_ST);
-		o.uv21.zw = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(-BLOOM, BLOOM), _MainTex_ST);
+		o.uv21.xy = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(OFFSET, -OFFSET), _MainTex_ST);
+		o.uv21.zw = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(-OFFSET, OFFSET), _MainTex_ST);
 
-		o.uv22.xy = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(BLOOM, 0), _MainTex_ST);
-		o.uv22.zw = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(-BLOOM, 0), _MainTex_ST);
+		o.uv22.xy = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(OFFSET, 0), _MainTex_ST);
+		o.uv22.zw = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(-OFFSET, 0), _MainTex_ST);
 
-		o.uv23.xy = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(0, BLOOM), _MainTex_ST);
-		o.uv23.zw = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(0, -BLOOM), _MainTex_ST);
+		o.uv23.xy = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(0, OFFSET), _MainTex_ST);
+		o.uv23.zw = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(0, -OFFSET), _MainTex_ST);
 
 		return o;
 	}

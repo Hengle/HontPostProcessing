@@ -25,14 +25,16 @@ namespace Hont.PostProcessing.ConcertComponents
             base.OnEnable();
 
             mCacheItemListCount = -1;
+
+            mCommandBuffer = new CommandBuffer();
+            mCommandBuffer.name = "Outline";
+            mContext.Camera.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mCommandBuffer);
         }
 
         public override void OnDisable()
         {
             base.OnDisable();
 
-            mCommandBuffer.ReleaseTemporaryRT(mMaskRT_ID);
-            mCommandBuffer.ReleaseTemporaryRT(mTempRT_ID);
             mContext.Camera.RemoveCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mCommandBuffer);
             mCommandBuffer.Dispose();
         }
@@ -43,7 +45,7 @@ namespace Hont.PostProcessing.ConcertComponents
 
             if (mCacheItemListCount != Model.ItemList.Count)
             {
-                UpdateCommandBuffer();
+                RebuildCommandBuffer();
 
                 mCacheItemListCount = Model.ItemList.Count;
             }
@@ -53,18 +55,9 @@ namespace Hont.PostProcessing.ConcertComponents
         {
         }
 
-        void UpdateCommandBuffer()
+        void RebuildCommandBuffer()
         {
-            if (mCommandBuffer != null)
-            {
-                mCommandBuffer.ReleaseTemporaryRT(mMaskRT_ID);
-                mCommandBuffer.ReleaseTemporaryRT(mTempRT_ID);
-                mContext.Camera.RemoveCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mCommandBuffer);
-                mCommandBuffer.Dispose();
-            }
-
-            mCommandBuffer = new CommandBuffer();
-            mCommandBuffer.name = "Outline";
+            mCommandBuffer.Clear();
 
             mMaskRT_ID = Shader.PropertyToID("OutlineEffect_MaskRT");
             mCommandBuffer.GetTemporaryRT(mMaskRT_ID, -1, -1);
@@ -90,7 +83,8 @@ namespace Hont.PostProcessing.ConcertComponents
             mCommandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, mTempRT_ID);
             mCommandBuffer.Blit(mTempRT_ID, BuiltinRenderTextureType.CameraTarget, OutlineEffectMaterial);
 
-            mContext.Camera.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mCommandBuffer);
+            mCommandBuffer.ReleaseTemporaryRT(mMaskRT_ID);
+            mCommandBuffer.ReleaseTemporaryRT(mTempRT_ID);
         }
     }
 }
