@@ -8,6 +8,5 @@ namespace Hont
     {
         public Camera Camera { get; set; }
         public RenderTexture CurrentRenderRT { get; set; }
-        public RenderTexture CurrentDstRT { get; set; }
     }
 }

@@ -17,5 +17,5 @@ MonoBehaviour:
     \   <Unfold>false</Unfold>\r\n    <a>0</a>\r\n  </HontPostProcessingModelBase>\r\n
     \ <HontPostProcessingModelBase xsi:type=\"OutlineModel\">\r\n    <Enabled>true</Enabled>\r\n
     \   <Unfold>true</Unfold>\r\n    <outlineColor>\r\n      <r>1</r>\r\n      <g>0</g>\r\n
-    \     <b>0</b>\r\n      <a>0.5</a>\r\n    </outlineColor>\r\n    <outlineWidth>12</outlineWidth>\r\n
+    \     <b>0</b>\r\n      <a>0.5</a>\r\n    </outlineColor>\r\n    <outlineWidth>7.15</outlineWidth>\r\n
     \ </HontPostProcessingModelBase>\r\n</ArrayOfHontPostProcessingModelBase>"

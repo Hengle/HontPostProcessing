@@ -71,32 +71,17 @@ namespace Hont.PostProcessing
 
         public void Render(RenderTexture src, RenderTexture dst)
         {
-            mContext.CurrentRenderRT = RenderTexture.GetTemporary(src.descriptor);
-            mContext.CurrentDstRT = RenderTexture.GetTemporary(src.descriptor);
+            mContext.CurrentRenderRT = src;
 
-            Graphics.Blit(src, mContext.CurrentRenderRT);
-
-            var currentDstRT = mContext.CurrentRenderRT;
             for (int i = 0, iMax = mComponentList.Count; i < iMax; i++)
             {
                 var item = mComponentList[i];
 
                 if (item.GetModel().Enabled)
-                {
                     item.OnRender();
-
-                    currentDstRT = mContext.CurrentDstRT;
-                }
-
-                var cacheRT = mContext.CurrentRenderRT;
-                mContext.CurrentRenderRT = mContext.CurrentDstRT;
-                mContext.CurrentDstRT = cacheRT;
             }
 
-            Graphics.Blit(currentDstRT, dst);
-
-            RenderTexture.ReleaseTemporary(mContext.CurrentRenderRT);
-            RenderTexture.ReleaseTemporary(mContext.CurrentDstRT);
+            Graphics.Blit(mContext.CurrentRenderRT, dst);
         }
 
         #region --- ISerializationCallbackReceiver Members ---
