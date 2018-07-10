@@ -1,10 +1,12 @@
-﻿Shader "Hidden/BloomShader"
+﻿Shader "Hidden/Bloom_StarGlowShader"
 {
 	Properties
 	{
 		_MainTex("Base", 2D) = "" {}
-		_BloomTex("Bloom", 2D) = "" {}
+		_StarGlowTex("StarGlowTex", 2D) = "" {}
+		_StarGlowTexOverlayAlpha("StarGlowTex Overlay Alpha", float) = 1
 		_Streak_Length("Streak Length", float) = 1
+		_Mode("Mode", float) = 1
 	}
 
 	CGINCLUDE
@@ -34,6 +36,8 @@
 	sampler2D _BloomTex;
 	
 	float _Streak_Length;
+	float _Mode;
+	float _StarGlowTexOverlayAlpha;
 
 	v2f_Base vert_Base(appdata_img v)
 	{
@@ -48,7 +52,7 @@
 	{
 		fixed4 color = tex2D(_MainTex, i.uv);
 
-		fixed4 bloomColor = tex2D(_BloomTex, i.uv);
+		fixed4 bloomColor = tex2D(_BloomTex, i.uv) * _StarGlowTexOverlayAlpha;
 		
 		return color + bloomColor;
 	}
@@ -77,15 +81,15 @@
 		o.uv_Slash2.xy = v.texcoord.xy + half2(-_MainTex_TexelSize.x, -_MainTex_TexelSize.y) * _Streak_Length;
 		o.uv_Slash2.zw = v.texcoord.xy + half2(_MainTex_TexelSize.x, _MainTex_TexelSize.y) * _Streak_Length;
 		
-		o.uv_Slash1_2.xy = v.texcoord.xy + half2(_MainTex_TexelSize.x, -_MainTex_TexelSize.y) * (_Streak_Length*2);
-		o.uv_Slash1_2.zw = v.texcoord.xy + half2(-_MainTex_TexelSize.x, _MainTex_TexelSize.y) * (_Streak_Length*2);
-		o.uv_Slash2_2.xy = v.texcoord.xy + half2(-_MainTex_TexelSize.x, -_MainTex_TexelSize.y) * (_Streak_Length*2);
-		o.uv_Slash2_2.zw = v.texcoord.xy + half2(_MainTex_TexelSize.x, _MainTex_TexelSize.y) * (_Streak_Length*2);
+		o.uv_Slash1_2.xy = v.texcoord.xy + half2(_MainTex_TexelSize.x, -_MainTex_TexelSize.y) * (_Streak_Length * 2.3);
+		o.uv_Slash1_2.zw = v.texcoord.xy + half2(-_MainTex_TexelSize.x, _MainTex_TexelSize.y) * (_Streak_Length * 2.3);
+		o.uv_Slash2_2.xy = v.texcoord.xy + half2(-_MainTex_TexelSize.x, -_MainTex_TexelSize.y) * (_Streak_Length * 2.3);
+		o.uv_Slash2_2.zw = v.texcoord.xy + half2(_MainTex_TexelSize.x, _MainTex_TexelSize.y) * (_Streak_Length * 2.3);
 		
-		o.uv_Slash1_3.xy = v.texcoord.xy + half2(_MainTex_TexelSize.x, -_MainTex_TexelSize.y) * (_Streak_Length*2.7);
-		o.uv_Slash1_3.zw = v.texcoord.xy + half2(-_MainTex_TexelSize.x, _MainTex_TexelSize.y) * (_Streak_Length*2.7);
-		o.uv_Slash2_3.xy = v.texcoord.xy + half2(-_MainTex_TexelSize.x, -_MainTex_TexelSize.y) * (_Streak_Length*2.7);
-		o.uv_Slash2_3.zw = v.texcoord.xy + half2(_MainTex_TexelSize.x, _MainTex_TexelSize.y) * (_Streak_Length*2.7);
+		o.uv_Slash1_3.xy = v.texcoord.xy + half2(_MainTex_TexelSize.x, -_MainTex_TexelSize.y) * (_Streak_Length * 3.3);
+		o.uv_Slash1_3.zw = v.texcoord.xy + half2(-_MainTex_TexelSize.x, _MainTex_TexelSize.y) * (_Streak_Length * 3.3);
+		o.uv_Slash2_3.xy = v.texcoord.xy + half2(-_MainTex_TexelSize.x, -_MainTex_TexelSize.y) * (_Streak_Length * 3.3);
+		o.uv_Slash2_3.zw = v.texcoord.xy + half2(_MainTex_TexelSize.x, _MainTex_TexelSize.y) * (_Streak_Length * 3.3);
 		
 		return o;
 	}
@@ -113,7 +117,17 @@
 		fixed4 slash1 = (blurCol_Slash1xy + blurCol_Slash1zw + (blurCol_Slash1xy_2 + blurCol_Slash1zw_2)*0.5 + (blurCol_Slash1xy_3 + blurCol_Slash1zw_3)*0.2) / 3;
 		fixed4 slash2 = (blurCol_Slash2xy + blurCol_Slash2zw + (blurCol_Slash2xy_2 + blurCol_Slash2zw_2)*0.5 + (blurCol_Slash2xy_3 + blurCol_Slash2zw_3)*0.2) / 3;
 		
-		return (slash1 + slash2) * 0.5;
+		if(_Mode < 0.5)//Mode = 0
+		{
+			return slash1;
+		}
+		
+		if(_Mode > 0.5)//Mode = 1
+		{
+			return slash2;
+		}
+		
+		return 0;
 	}
 
 	ENDCG

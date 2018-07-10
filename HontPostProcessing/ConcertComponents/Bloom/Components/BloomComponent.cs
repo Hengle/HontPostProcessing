@@ -16,9 +16,9 @@ namespace Hont.PostProcessing.ConcertComponents
         RenderTexture mCacheRT;
         RenderTexture mBloomBlur1RT;
         RenderTexture mBloomBlur2RT;
-        Material mStarGlowMaterial;
+        Material mBloomMaterial;
 
-        Material StarGlowMaterial { get { return mStarGlowMaterial ?? (mStarGlowMaterial = new Material(Shader.Find("Hidden/BloomShader"))); } }
+        Material BloomMaterial { get { return mBloomMaterial ?? (mBloomMaterial = new Material(Shader.Find("Hidden/BloomShader"))); } }
 
         public override string Name { get { return "Bloom"; } }
 
@@ -50,18 +50,18 @@ namespace Hont.PostProcessing.ConcertComponents
                 mBloomBlur2RT = RenderTexture.GetTemporary(descriptor.width >> 1, descriptor.height >> 1, descriptor.depthBufferBits, descriptor.colorFormat);
             }
 
-            StarGlowMaterial.SetFloat(mStreak_Length_ID, Model.streak_Length);
+            BloomMaterial.SetFloat(mStreak_Length_ID, Model.streak_Length);
 
-            Graphics.Blit(mContext.CurrentRenderRT, mCacheRT, StarGlowMaterial, PASS2_EXTRACTHDR);
+            Graphics.Blit(mContext.CurrentRenderRT, mCacheRT, BloomMaterial, PASS2_EXTRACTHDR);
 
-            Graphics.Blit(mCacheRT, mBloomBlur1RT, StarGlowMaterial, PASS1_XBLUR);
-            Graphics.Blit(mBloomBlur1RT, mBloomBlur2RT, StarGlowMaterial, PASS1_XBLUR);
-            Graphics.Blit(mBloomBlur2RT, mBloomBlur1RT, StarGlowMaterial, PASS1_XBLUR);
+            Graphics.Blit(mCacheRT, mBloomBlur1RT, BloomMaterial, PASS1_XBLUR);
+            Graphics.Blit(mBloomBlur1RT, mBloomBlur2RT, BloomMaterial, PASS1_XBLUR);
+            Graphics.Blit(mBloomBlur2RT, mBloomBlur1RT, BloomMaterial, PASS1_XBLUR);
 
-            StarGlowMaterial.SetTexture(mBloomTex_ID, mBloomBlur1RT);
+            BloomMaterial.SetTexture(mBloomTex_ID, mBloomBlur1RT);
 
             Graphics.Blit(mContext.CurrentRenderRT, mCacheRT);
-            Graphics.Blit(mCacheRT, mContext.CurrentRenderRT, StarGlowMaterial, PASS0_BASS);
+            Graphics.Blit(mCacheRT, mContext.CurrentRenderRT, BloomMaterial, PASS0_BASS);
         }
     }
 }
