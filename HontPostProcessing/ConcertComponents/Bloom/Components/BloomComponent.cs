@@ -14,9 +14,6 @@ namespace Hont.PostProcessing.ConcertComponents
         int mStreak_Length_ID;
         int mThreshold_ID;
 
-        RenderTexture mCacheRT;
-        RenderTexture mBloomBlur1RT;
-        RenderTexture mBloomBlur2RT;
         Material mBloomMaterial;
 
         Material BloomMaterial { get { return mBloomMaterial ?? (mBloomMaterial = new Material(Shader.Find("Hidden/BloomShader"))); } }
@@ -35,36 +32,31 @@ namespace Hont.PostProcessing.ConcertComponents
 
         public override void OnRender()
         {
-            if (mCacheRT == null)
-            {
-                mCacheRT = RenderTexture.GetTemporary(mContext.CurrentRenderRT.descriptor);
-            }
+            var cacheRT = RenderTexture.GetTemporary(mContext.CurrentRenderRT.descriptor);
 
-            if (mBloomBlur1RT == null)
-            {
-                var descriptor = mContext.CurrentRenderRT.descriptor;
-                mBloomBlur1RT = RenderTexture.GetTemporary(descriptor.width >> 1, descriptor.height >> 1, 0, descriptor.colorFormat);
-            }
+            var descriptor = mContext.CurrentRenderRT.descriptor;
+            var bloomBlur1RT = RenderTexture.GetTemporary(descriptor.width >> 1, descriptor.height >> 1, 0, RenderTextureFormat.ARGBHalf);//1/2
 
-            if (mBloomBlur2RT == null)
-            {
-                var descriptor = mContext.CurrentRenderRT.descriptor;
-                mBloomBlur2RT = RenderTexture.GetTemporary(descriptor.width >> 1, descriptor.height >> 1, 0, descriptor.colorFormat);
-            }
+            descriptor = mContext.CurrentRenderRT.descriptor;
+            var bloomBlur2RT = RenderTexture.GetTemporary(descriptor.width >> 1, descriptor.height >> 1, 0, RenderTextureFormat.ARGBHalf);//1/2
 
             BloomMaterial.SetFloat(mStreak_Length_ID, Model.streak_Length);
             BloomMaterial.SetFloat(mThreshold_ID, Model.threshold);
 
-            Graphics.Blit(mContext.CurrentRenderRT, mCacheRT, BloomMaterial, PASS2_EXTRACTHDR);
+            Graphics.Blit(mContext.CurrentRenderRT, cacheRT, BloomMaterial, PASS2_EXTRACTHDR);
 
-            Graphics.Blit(mCacheRT, mBloomBlur1RT, BloomMaterial, PASS1_XBLUR);
-            Graphics.Blit(mBloomBlur1RT, mBloomBlur2RT, BloomMaterial, PASS1_XBLUR);
-            Graphics.Blit(mBloomBlur2RT, mBloomBlur1RT, BloomMaterial, PASS1_XBLUR);
+            Graphics.Blit(cacheRT, bloomBlur1RT, BloomMaterial, PASS1_XBLUR);
+            Graphics.Blit(bloomBlur1RT, bloomBlur2RT, BloomMaterial, PASS1_XBLUR);
+            Graphics.Blit(bloomBlur2RT, bloomBlur1RT, BloomMaterial, PASS1_XBLUR);
 
-            BloomMaterial.SetTexture(mBloomTex_ID, mBloomBlur1RT);
+            BloomMaterial.SetTexture(mBloomTex_ID, bloomBlur1RT);
 
-            Graphics.Blit(mContext.CurrentRenderRT, mCacheRT);
-            Graphics.Blit(mCacheRT, mContext.CurrentRenderRT, BloomMaterial, PASS0_BASS);
+            Graphics.Blit(mContext.CurrentRenderRT, cacheRT);
+            Graphics.Blit(cacheRT, mContext.CurrentRenderRT, BloomMaterial, PASS0_BASS);
+
+            RenderTexture.ReleaseTemporary(cacheRT);
+            RenderTexture.ReleaseTemporary(bloomBlur1RT);
+            RenderTexture.ReleaseTemporary(bloomBlur2RT);
         }
     }
 }
