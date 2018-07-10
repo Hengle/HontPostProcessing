@@ -9,6 +9,7 @@ namespace Hont.PostProcessing.ConcertComponents
     public class Bloom_StarGlowModel : HontPostProcessingModelBase
     {
         public float streak_Length;
+        public float threshold;
 
         public override string Name { get { return "Bloom_StarGlow"; } }
     }

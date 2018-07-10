@@ -13,8 +13,10 @@ namespace Hont.PostProcessing.ConcertComponents
         int mBloomTex_ID;
         int mStreak_Length_ID;
         int mMode_ID;
+        int mThreshold_ID;
 
         RenderTexture mCacheRT;
+        RenderTexture mBloomAreaRT;
         RenderTexture mBloomBlur1RT;
         RenderTexture mBloomBlur2RT;
         Material mStarGlowMaterial;
@@ -31,6 +33,7 @@ namespace Hont.PostProcessing.ConcertComponents
             mStreak_Length_ID = Shader.PropertyToID("_Streak_Length");
             mBloomTex_ID = Shader.PropertyToID("_BloomTex");
             mMode_ID = Shader.PropertyToID("_Mode");
+            mThreshold_ID = Shader.PropertyToID("_Threshold");
 
             StarGlowMaterial.SetFloat("_StarGlowTexOverlayAlpha", 0.5f);
         }
@@ -41,6 +44,9 @@ namespace Hont.PostProcessing.ConcertComponents
 
             if (mCacheRT != null)
                 RenderTexture.ReleaseTemporary(mCacheRT);
+
+            if (mBloomAreaRT != null)
+                RenderTexture.ReleaseTemporary(mBloomAreaRT);
 
             if (mBloomBlur1RT != null)
                 RenderTexture.ReleaseTemporary(mBloomBlur1RT);
@@ -56,6 +62,11 @@ namespace Hont.PostProcessing.ConcertComponents
                 mCacheRT = RenderTexture.GetTemporary(mContext.CurrentRenderRT.descriptor);
             }
 
+            if (mBloomAreaRT == null)
+            {
+                mBloomAreaRT = RenderTexture.GetTemporary(mContext.CurrentRenderRT.descriptor);
+            }
+
             if (mBloomBlur1RT == null)
             {
                 var descriptor = mContext.CurrentRenderRT.descriptor;
@@ -69,32 +80,35 @@ namespace Hont.PostProcessing.ConcertComponents
             }
 
             StarGlowMaterial.SetFloat(mStreak_Length_ID, Model.streak_Length);
+            StarGlowMaterial.SetFloat(mThreshold_ID, Model.threshold);
+
+            Graphics.Blit(mContext.CurrentRenderRT, mCacheRT);
 
             //-----------------------------------------------------------Mode0.
             StarGlowMaterial.SetFloat(mMode_ID, 0);
 
-            Graphics.Blit(mContext.CurrentRenderRT, mCacheRT, StarGlowMaterial, PASS2_EXTRACTHDR);
+            Graphics.Blit(mContext.CurrentRenderRT, mBloomAreaRT, StarGlowMaterial, PASS2_EXTRACTHDR);
 
-            Graphics.Blit(mCacheRT, mBloomBlur1RT, StarGlowMaterial, PASS1_XBLUR);
+            Graphics.Blit(mBloomAreaRT, mBloomBlur1RT, StarGlowMaterial, PASS1_XBLUR);
             Graphics.Blit(mBloomBlur1RT, mBloomBlur2RT, StarGlowMaterial, PASS1_XBLUR);
             Graphics.Blit(mBloomBlur2RT, mBloomBlur1RT, StarGlowMaterial, PASS1_XBLUR);
 
             StarGlowMaterial.SetTexture(mBloomTex_ID, mBloomBlur1RT);
-            Graphics.Blit(mContext.CurrentRenderRT, mBloomBlur2RT, StarGlowMaterial, PASS0_BASS);
-            Graphics.Blit(mBloomBlur2RT, mContext.CurrentRenderRT);
+            Graphics.Blit(mContext.CurrentRenderRT, mCacheRT, StarGlowMaterial, PASS0_BASS);
+            Graphics.Blit(mCacheRT, mContext.CurrentRenderRT);
             //-------------------------------------------------------------------.
 
 
             //-----------------------------------------------------------Mode1.
             StarGlowMaterial.SetFloat(mMode_ID, 1);
 
-            Graphics.Blit(mCacheRT, mBloomBlur1RT, StarGlowMaterial, PASS1_XBLUR);
+            Graphics.Blit(mBloomAreaRT, mBloomBlur1RT, StarGlowMaterial, PASS1_XBLUR);
             Graphics.Blit(mBloomBlur1RT, mBloomBlur2RT, StarGlowMaterial, PASS1_XBLUR);
             Graphics.Blit(mBloomBlur2RT, mBloomBlur1RT, StarGlowMaterial, PASS1_XBLUR);
 
             StarGlowMaterial.SetTexture(mBloomTex_ID, mBloomBlur1RT);
-            Graphics.Blit(mContext.CurrentRenderRT, mBloomBlur2RT, StarGlowMaterial, PASS0_BASS);
-            Graphics.Blit(mBloomBlur2RT, mContext.CurrentRenderRT);
+            Graphics.Blit(mContext.CurrentRenderRT, mCacheRT, StarGlowMaterial, PASS0_BASS);
+            Graphics.Blit(mCacheRT, mContext.CurrentRenderRT);
             //-------------------------------------------------------------------.
         }
     }

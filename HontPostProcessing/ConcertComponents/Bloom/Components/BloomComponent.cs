@@ -12,6 +12,7 @@ namespace Hont.PostProcessing.ConcertComponents
 
         int mBloomTex_ID;
         int mStreak_Length_ID;
+        int mThreshold_ID;
 
         RenderTexture mCacheRT;
         RenderTexture mBloomBlur1RT;
@@ -29,6 +30,7 @@ namespace Hont.PostProcessing.ConcertComponents
 
             mStreak_Length_ID = Shader.PropertyToID("_Streak_Length");
             mBloomTex_ID = Shader.PropertyToID("_BloomTex");
+            mThreshold_ID = Shader.PropertyToID("_Threshold");
         }
 
         public override void OnRender()
@@ -41,16 +43,17 @@ namespace Hont.PostProcessing.ConcertComponents
             if (mBloomBlur1RT == null)
             {
                 var descriptor = mContext.CurrentRenderRT.descriptor;
-                mBloomBlur1RT = RenderTexture.GetTemporary(descriptor.width >> 1, descriptor.height >> 1, descriptor.depthBufferBits, descriptor.colorFormat);
+                mBloomBlur1RT = RenderTexture.GetTemporary(descriptor.width >> 1, descriptor.height >> 1, 0, descriptor.colorFormat);
             }
 
             if (mBloomBlur2RT == null)
             {
                 var descriptor = mContext.CurrentRenderRT.descriptor;
-                mBloomBlur2RT = RenderTexture.GetTemporary(descriptor.width >> 1, descriptor.height >> 1, descriptor.depthBufferBits, descriptor.colorFormat);
+                mBloomBlur2RT = RenderTexture.GetTemporary(descriptor.width >> 1, descriptor.height >> 1, 0, descriptor.colorFormat);
             }
 
             BloomMaterial.SetFloat(mStreak_Length_ID, Model.streak_Length);
+            BloomMaterial.SetFloat(mThreshold_ID, Model.threshold);
 
             Graphics.Blit(mContext.CurrentRenderRT, mCacheRT, BloomMaterial, PASS2_EXTRACTHDR);
 

@@ -33,7 +33,7 @@ namespace Hont.PostProcessing.ConcertComponents
 
             mCommandBuffer.ReleaseTemporaryRT(mMaskRT_ID);
             mCommandBuffer.ReleaseTemporaryRT(mTempRT_ID);
-            mContext.Camera.RemoveCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mCommandBuffer);
+            mContext.Camera.RemoveCommandBuffer(CameraEvent.AfterFinalPass, mCommandBuffer);
             mCommandBuffer.Dispose();
         }
 
@@ -67,10 +67,10 @@ namespace Hont.PostProcessing.ConcertComponents
             mCommandBuffer.name = "Outline";
 
             mMaskRT_ID = Shader.PropertyToID("OutlineEffect_MaskRT");
-            mCommandBuffer.GetTemporaryRT(mMaskRT_ID, -1, -1);
+            mCommandBuffer.GetTemporaryRT(mMaskRT_ID, -1, -1, 24);
 
             mTempRT_ID = Shader.PropertyToID("OutlineEffect_TempRT");
-            mCommandBuffer.GetTemporaryRT(mTempRT_ID, -1, -1);
+            mCommandBuffer.GetTemporaryRT(mTempRT_ID, -1, -1, 24);
 
             mCommandBuffer.SetRenderTarget(mMaskRT_ID);
             mCommandBuffer.ClearRenderTarget(true, true, Color.black);
@@ -100,7 +100,7 @@ namespace Hont.PostProcessing.ConcertComponents
             mCommandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, mTempRT_ID);
             mCommandBuffer.Blit(mTempRT_ID, BuiltinRenderTextureType.CameraTarget, OutlineEffectMaterial);
 
-            mContext.Camera.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mCommandBuffer);
+            mContext.Camera.AddCommandBuffer(CameraEvent.AfterFinalPass, mCommandBuffer);
         }
 
         void DrawRenderer(MeshRenderer renderer, bool containSubMesh)

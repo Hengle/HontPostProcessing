@@ -5,6 +5,7 @@
 		_MainTex("Base", 2D) = "" {}
 		_BloomTex("Bloom", 2D) = "" {}
 		_Streak_Length("Streak Length", float) = 1
+		_Threshold("Threshold", float) = 0.1
 	}
 
 	CGINCLUDE
@@ -34,6 +35,7 @@
 	sampler2D _BloomTex;
 	
 	float _Streak_Length;
+	float _Threshold;
 
 	v2f_Base vert_Base(appdata_img v)
 	{
@@ -64,7 +66,7 @@
 
 	fixed4 frag_ExtractHDR(v2f_Base i) : SV_Target
 	{
-		return saturate(tex2D(_MainTex, i.uv.xy) - 1);
+		return saturate(tex2D(_MainTex, i.uv.xy) - (1+_Threshold));
 	}
 	
 	v2f_XBlur vert_XBlur(appdata_img v)

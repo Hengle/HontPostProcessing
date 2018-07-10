@@ -12,6 +12,7 @@ namespace Hont.PostProcessing.ConcertComponents
         protected override void OnInspectorGUI()
         {
             Model.streak_Length = EditorGUILayout.FloatField("Streak Length", Model.streak_Length);
+            Model.threshold = EditorGUILayout.FloatField("Threshold", Model.threshold);
         }
     }
 }
