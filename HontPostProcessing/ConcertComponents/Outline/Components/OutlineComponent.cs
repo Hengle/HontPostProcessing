@@ -7,7 +7,6 @@ namespace Hont.PostProcessing.ConcertComponents
 {
     public class OutlineComponent : HontPostProcessingComponent<OutlineModel>
     {
-        int mCacheItemListCount;
         int mMaskRT_ID;
         int mTempRT_ID;
         Material mOutlineEffectMaterial;
@@ -24,16 +23,19 @@ namespace Hont.PostProcessing.ConcertComponents
         {
             base.OnEnable();
 
-            mCacheItemListCount = -1;
+            mCommandBuffer = new CommandBuffer();
+            mCommandBuffer.name = "Outline";
+            mMaskRT_ID = Shader.PropertyToID("OutlineEffect_MaskRT");
+            mTempRT_ID = Shader.PropertyToID("OutlineEffect_TempRT");
+
+            mContext.Camera.AddCommandBuffer(CameraEvent.BeforeImageEffects, mCommandBuffer);
         }
 
         public override void OnDisable()
         {
             base.OnDisable();
 
-            mCommandBuffer.ReleaseTemporaryRT(mMaskRT_ID);
-            mCommandBuffer.ReleaseTemporaryRT(mTempRT_ID);
-            mContext.Camera.RemoveCommandBuffer(CameraEvent.AfterFinalPass, mCommandBuffer);
+            mContext.Camera.RemoveCommandBuffer(CameraEvent.BeforeImageEffects, mCommandBuffer);
             mCommandBuffer.Dispose();
         }
 
@@ -41,11 +43,9 @@ namespace Hont.PostProcessing.ConcertComponents
         {
             base.OnPreRender();
 
-            if (mCacheItemListCount != Model.ItemList.Count)
+            if (Model.IsDirty)
             {
                 UpdateCommandBuffer();
-
-                mCacheItemListCount = Model.ItemList.Count;
             }
         }
 
@@ -55,21 +55,9 @@ namespace Hont.PostProcessing.ConcertComponents
 
         void UpdateCommandBuffer()
         {
-            if (mCommandBuffer != null)
-            {
-                mCommandBuffer.ReleaseTemporaryRT(mMaskRT_ID);
-                mCommandBuffer.ReleaseTemporaryRT(mTempRT_ID);
-                mContext.Camera.RemoveCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mCommandBuffer);
-                mCommandBuffer.Dispose();
-            }
+            mCommandBuffer.Clear();
 
-            mCommandBuffer = new CommandBuffer();
-            mCommandBuffer.name = "Outline";
-
-            mMaskRT_ID = Shader.PropertyToID("OutlineEffect_MaskRT");
             mCommandBuffer.GetTemporaryRT(mMaskRT_ID, -1, -1, 24);
-
-            mTempRT_ID = Shader.PropertyToID("OutlineEffect_TempRT");
             mCommandBuffer.GetTemporaryRT(mTempRT_ID, -1, -1, 24);
 
             mCommandBuffer.SetRenderTarget(mMaskRT_ID);
@@ -88,9 +76,13 @@ namespace Hont.PostProcessing.ConcertComponents
                         DrawRenderer(attachMeshRenderers, item.containSubMesh);
                     }
                 }
+                else
+                {
+                    var renderer = item.gameObject.GetComponentInChildren<MeshRenderer>();
 
-                var renderer = item.gameObject.GetComponentInChildren<MeshRenderer>();
-                DrawRenderer(renderer, item.containSubMesh);
+                    if (renderer != null)
+                        DrawRenderer(renderer, item.containSubMesh);
+                }
             }
 
             mCommandBuffer.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
@@ -100,7 +92,8 @@ namespace Hont.PostProcessing.ConcertComponents
             mCommandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, mTempRT_ID);
             mCommandBuffer.Blit(mTempRT_ID, BuiltinRenderTextureType.CameraTarget, OutlineEffectMaterial);
 
-            mContext.Camera.AddCommandBuffer(CameraEvent.AfterFinalPass, mCommandBuffer);
+            mCommandBuffer.ReleaseTemporaryRT(mMaskRT_ID);
+            mCommandBuffer.ReleaseTemporaryRT(mTempRT_ID);
         }
 
         void DrawRenderer(MeshRenderer renderer, bool containSubMesh)
@@ -109,15 +102,28 @@ namespace Hont.PostProcessing.ConcertComponents
             {
                 var filter = renderer.GetComponentInChildren<MeshFilter>();
 
-                for (int j = 0, jMax = filter.sharedMesh.subMeshCount; j < jMax; j++)
+                for (int i = 0, iMax = filter.sharedMesh.subMeshCount; i < iMax; i++)
                 {
-                    mCommandBuffer.DrawRenderer(renderer, ReplaceMaterial, j);
+                    DrawRenderer_Imple(renderer, i);
                 }
             }
             else
             {
-                mCommandBuffer.DrawRenderer(renderer, ReplaceMaterial);
+                DrawRenderer_Imple(renderer);
             }
+        }
+
+        void DrawRenderer_Imple(MeshRenderer renderer, int subMeshIndex = -1)
+        {
+            var material = renderer.sharedMaterial;
+
+            if (material)
+                ReplaceMaterial.mainTexture = material.mainTexture;
+
+            if (subMeshIndex == -1)
+                mCommandBuffer.DrawRenderer(renderer, ReplaceMaterial);
+            else
+                mCommandBuffer.DrawRenderer(renderer, ReplaceMaterial, subMeshIndex);
         }
     }
 }

@@ -7,6 +7,8 @@ namespace Hont.PostProcessing.ConcertComponents
 {
     public class CameraBlurComponent : HontPostProcessingComponent<CameraBlurModel>
     {
+        float mLastBlurRadius;
+
         int mCameraBlurRT_ID;
         Material mCameraBlurMaterial;
         CommandBuffer mCommandBuffer;
@@ -23,6 +25,47 @@ namespace Hont.PostProcessing.ConcertComponents
             mCommandBuffer = new CommandBuffer();
             mCommandBuffer.name = "Blur";
             mCameraBlurRT_ID = Shader.PropertyToID("BlurTempRT1");
+            mContext.Camera.AddCommandBuffer(CameraEvent.AfterImageEffects, mCommandBuffer);
+        }
+
+        public override void OnPreRender()
+        {
+            base.OnPreRender();
+
+            if (!Mathf.Approximately(mLastBlurRadius, Model.blurRadius))
+            {
+                if (Model.blurRadius <= 0)
+                {
+                    ClearCommandBuffer();
+                }
+                else
+                {
+                    UpdateCommandBuffer();
+                }
+            }
+
+            CameraBlurMaterial.SetFloat("_BlurRadius", Model.blurRadius);
+
+            mLastBlurRadius = Model.blurRadius;
+        }
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+
+            mCommandBuffer.ReleaseTemporaryRT(mCameraBlurRT_ID);
+            mContext.Camera.RemoveCommandBuffer(CameraEvent.AfterImageEffects, mCommandBuffer);
+            mCommandBuffer.Dispose();
+        }
+
+        public override void OnRender()
+        {
+        }
+
+        void UpdateCommandBuffer()
+        {
+            mCommandBuffer.Clear();
+
             mCommandBuffer.GetTemporaryRT(mCameraBlurRT_ID, -1, -1, 0);
             mCommandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, mCameraBlurRT_ID);
 
@@ -33,28 +76,11 @@ namespace Hont.PostProcessing.ConcertComponents
             }
 
             mCommandBuffer.Blit(mCameraBlurRT_ID, BuiltinRenderTextureType.CameraTarget, CameraBlurMaterial);
-
-            mContext.Camera.AddCommandBuffer(CameraEvent.BeforeImageEffects, mCommandBuffer);
         }
 
-        public override void OnPreRender()
+        void ClearCommandBuffer()
         {
-            base.OnPreRender();
-
-            CameraBlurMaterial.SetFloat("_BlurRadius", Model.blurRadius);
-        }
-
-        public override void OnDisable()
-        {
-            base.OnDisable();
-
-            mCommandBuffer.ReleaseTemporaryRT(mCameraBlurRT_ID);
-            mContext.Camera.RemoveCommandBuffer(CameraEvent.BeforeImageEffects, mCommandBuffer);
-            mCommandBuffer.Dispose();
-        }
-
-        public override void OnRender()
-        {
+            mCommandBuffer.Clear();
         }
     }
 }

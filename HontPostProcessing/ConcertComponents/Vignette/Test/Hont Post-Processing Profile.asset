@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4150cf0d6d13f546bc44799eb2d963a, type: 3}
+  m_Name: Hont Post-Processing Profile
+  m_EditorClassIdentifier: 
+  modelSerializeData: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<ArrayOfHontPostProcessingModelBase
+    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n
+    \ <HontPostProcessingModelBase xsi:type=\"BloomModel\">\r\n    <Enabled>false</Enabled>\r\n
+    \   <Unfold>false</Unfold>\r\n    <streak_Length>0</streak_Length>\r\n    <threshold>0</threshold>\r\n
+    \ </HontPostProcessingModelBase>\r\n  <HontPostProcessingModelBase xsi:type=\"Bloom_StarGlowModel\">\r\n
+    \   <Enabled>false</Enabled>\r\n    <Unfold>false</Unfold>\r\n    <streak_Length>0</streak_Length>\r\n
+    \   <threshold>0</threshold>\r\n  </HontPostProcessingModelBase>\r\n  <HontPostProcessingModelBase
+    xsi:type=\"CameraBlurModel\">\r\n    <Enabled>false</Enabled>\r\n    <Unfold>false</Unfold>\r\n
+    \   <blurRadius>0.2</blurRadius>\r\n    <sampleNum>3</sampleNum>\r\n  </HontPostProcessingModelBase>\r\n
+    \ <HontPostProcessingModelBase xsi:type=\"ColorCorrectionModel\">\r\n    <Enabled>false</Enabled>\r\n
+    \   <Unfold>false</Unfold>\r\n    <redCurve>\r\n      <keys>\r\n        <Keyframe>\r\n
+    \         <time>0</time>\r\n          <value>0</value>\r\n          <inTangent>0</inTangent>\r\n
+    \         <outTangent>0</outTangent>\r\n          <tangentMode>0</tangentMode>\r\n
+    \       </Keyframe>\r\n        <Keyframe>\r\n          <time>1</time>\r\n          <value>1</value>\r\n
+    \         <inTangent>0</inTangent>\r\n          <outTangent>0</outTangent>\r\n
+    \         <tangentMode>0</tangentMode>\r\n        </Keyframe>\r\n      </keys>\r\n
+    \     <preWrapMode>ClampForever</preWrapMode>\r\n      <postWrapMode>ClampForever</postWrapMode>\r\n
+    \   </redCurve>\r\n    <greenCurve>\r\n      <keys>\r\n        <Keyframe>\r\n
+    \         <time>0</time>\r\n          <value>0</value>\r\n          <inTangent>0</inTangent>\r\n
+    \         <outTangent>0</outTangent>\r\n          <tangentMode>0</tangentMode>\r\n
+    \       </Keyframe>\r\n        <Keyframe>\r\n          <time>1</time>\r\n          <value>1</value>\r\n
+    \         <inTangent>0</inTangent>\r\n          <outTangent>0</outTangent>\r\n
+    \         <tangentMode>0</tangentMode>\r\n        </Keyframe>\r\n      </keys>\r\n
+    \     <preWrapMode>ClampForever</preWrapMode>\r\n      <postWrapMode>ClampForever</postWrapMode>\r\n
+    \   </greenCurve>\r\n    <blueCurve>\r\n      <keys>\r\n        <Keyframe>\r\n
+    \         <time>0</time>\r\n          <value>0</value>\r\n          <inTangent>0</inTangent>\r\n
+    \         <outTangent>0</outTangent>\r\n          <tangentMode>0</tangentMode>\r\n
+    \       </Keyframe>\r\n        <Keyframe>\r\n          <time>1</time>\r\n          <value>1</value>\r\n
+    \         <inTangent>0</inTangent>\r\n          <outTangent>0</outTangent>\r\n
+    \         <tangentMode>0</tangentMode>\r\n        </Keyframe>\r\n      </keys>\r\n
+    \     <preWrapMode>ClampForever</preWrapMode>\r\n      <postWrapMode>ClampForever</postWrapMode>\r\n
+    \   </blueCurve>\r\n    <intensity>1</intensity>\r\n  </HontPostProcessingModelBase>\r\n
+    \ <HontPostProcessingModelBase xsi:type=\"ExampleModel\">\r\n    <Enabled>false</Enabled>\r\n
+    \   <Unfold>false</Unfold>\r\n    <a>0</a>\r\n  </HontPostProcessingModelBase>\r\n
+    \ <HontPostProcessingModelBase xsi:type=\"GrainModel\">\r\n    <Enabled>false</Enabled>\r\n
+    \   <Unfold>false</Unfold>\r\n    <noiseSize>8</noiseSize>\r\n    <noiseRate>0.5</noiseRate>\r\n
+    \   <intensity>1</intensity>\r\n    <tile>1</tile>\r\n  </HontPostProcessingModelBase>\r\n
+    \ <HontPostProcessingModelBase xsi:type=\"OutlineModel\">\r\n    <Enabled>false</Enabled>\r\n
+    \   <Unfold>false</Unfold>\r\n    <outlineColor>\r\n      <r>1</r>\r\n      <g>0</g>\r\n
+    \     <b>0</b>\r\n      <a>0.5</a>\r\n    </outlineColor>\r\n    <outlineWidth>1</outlineWidth>\r\n
+    \ </HontPostProcessingModelBase>\r\n  <HontPostProcessingModelBase xsi:type=\"SSAOModel\">\r\n
+    \   <Enabled>false</Enabled>\r\n    <Unfold>false</Unfold>\r\n    <radius>0.08</radius>\r\n
+    \   <occlusionIntensity>0.45</occlusionIntensity>\r\n    <downsampling>7</downsampling>\r\n
+    \   <minZ>0.83</minZ>\r\n  </HontPostProcessingModelBase>\r\n  <HontPostProcessingModelBase
+    xsi:type=\"VignetteModel\">\r\n    <Enabled>true</Enabled>\r\n    <Unfold>true</Unfold>\r\n
+    \   <k>\r\n      <x>0.02</x>\r\n      <y>1.47</y>\r\n      <z>3.27</z>\r\n      <w>0</w>\r\n
+    \   </k>\r\n  </HontPostProcessingModelBase>\r\n</ArrayOfHontPostProcessingModelBase>"

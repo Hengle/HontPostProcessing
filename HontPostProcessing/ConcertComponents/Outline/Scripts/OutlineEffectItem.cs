@@ -20,14 +20,22 @@ namespace Hont.PostProcessing.ConcertComponents
         HontPostProcessingProfile mProfile;
 
 
-        void OnEnable()
+        public void CollectionChildrenRenderers()
         {
             if (attachRendererSetting.childrenRendererToAttachArray)
                 attachRendererSetting.attachMeshRenderers.AddRange(transform.GetComponentsInChildren<MeshRenderer>());
+        }
+
+        void Awake()
+        {
+            CollectionChildrenRenderers();
 
             var behaviour = Camera.main.GetComponent<HontPostProcessingBehaviour>();
             mProfile = behaviour.Profile;
+        }
 
+        void OnEnable()
+        {
             var outlineEffect = mProfile.ModelList.Find(m => m.Name == "Outline") as OutlineModel;
             outlineEffect.ItemList.Add(this);
         }

@@ -1,9 +1,12 @@
-﻿Shader "Hidden/OutlineEffectMaskShader"
+﻿Shader "Hidden/UberShader"
 {
 	Properties
 	{
-	  _MainTex ("MainTexture (RGB)", 2D) = "white" {}
+		_BloomTex("Bloom", 2D) = "" {}
+		_StarGlowTex("StarGlow", 2D) = "" {}
+		
 	}
+
 	SubShader
 	{
 		Tags { "RenderType"="Opaque" }
@@ -19,32 +22,23 @@
 			struct appdata
 			{
 				float4 vertex : POSITION;
-				float2 texcoord : TEXCOORD0;
 			};
 
 			struct v2f
 			{
 				float4 vertex : SV_POSITION;
-				float2 uv : TEXCOORD0;
 			};
 
-			sampler2D _MainTex;
-			
 			v2f vert (appdata v)
 			{
 				v2f o = (v2f)0;
 				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = v.texcoord;
 
 				return o;
 			}
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				fixed4 color = tex2D(_MainTex, i.uv);
-	
-				clip(color.a-0.5);
-			
 				return 1;
 			}
 			ENDCG

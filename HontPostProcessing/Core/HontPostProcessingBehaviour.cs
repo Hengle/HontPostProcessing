@@ -15,13 +15,15 @@ namespace Hont.PostProcessing
         public void ReplaceProfile(HontPostProcessingProfile profile)
         {
             mProfile = profile;
-            mProfile.Init(Camera.main);
+            mProfile.Init(GetComponent<Camera>());
             mProfile.Enable();
         }
 
         void OnEnable()
         {
-            mProfile.Init(Camera.main);
+            if (mProfile == null) return;
+
+            mProfile.Init(GetComponent<Camera>());
 
             mProfile.Enable();
         }

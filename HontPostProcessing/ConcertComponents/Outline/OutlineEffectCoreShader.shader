@@ -32,8 +32,8 @@
 	{
 		v2f o;
 		o.pos = UnityObjectToClipPos(v.vertex);
-
 		o.uv = v.texcoord;
+
 		o.uv20.xy = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy, _MainTex_ST);
 		o.uv20.zw = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(-BLOOM, -BLOOM), _MainTex_ST);
 
@@ -51,7 +51,8 @@
 
 	fixed4 frag(v2f i) : SV_Target
 	{
-		fixed4 sourceColor = tex2D(_MainTex, i.uv);
+		fixed4 sourceColor = tex2D(_MainTex, float2(i.uv.x, i.uv.y));
+
 		fixed4 color = tex2D(_OutlineMaskTexture, i.uv20.xy);
 		color += tex2D(_OutlineMaskTexture, i.uv20.zw);
 		color += tex2D(_OutlineMaskTexture, i.uv21.xy);
@@ -66,7 +67,7 @@
 
 		fixed4 changedColor = lerp(sourceColor, color, color.r);
 
-		return lerp(changedColor, sourceColor, tex2D(_OutlineMaskTexture, i.uv));
+		return lerp(changedColor, sourceColor, tex2D(_OutlineMaskTexture, i.uv).r);
 	}
 
 	ENDCG
